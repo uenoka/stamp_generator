@@ -67,3 +67,33 @@ src/
 - `react` / `react-dom` / `@types/react` / `@types/react-dom` を 19 系へ更新
 - `tsconfig.json` は Next.js により `jsx: react-jsx` と `.next/dev/types/**/*.ts` が自動反映
 - このアプリは `next/image`、`rewrites`、`middleware/proxy`、Async Request APIs を使っていないため、今回のコード変更は依存更新のみで済んでいます
+
+## Cloudflare Pages デプロイ
+
+このアプリはクライアントサイドのみで動作するため、Cloudflare Pages では `Static HTML Export` として公開できます。
+
+### リポジトリ側の前提
+
+- `next.config.js` で `output: "export"` を設定済み
+- `.node-version` で Node.js `20.19.5` を固定
+- `npm run build` 実行後の出力先は `out/`
+
+### Cloudflare Pages の設定
+
+- Framework preset: `Next.js (Static HTML Export)`
+- Production branch: `main`
+- Build command: `npm run build`
+- Build output directory: `out`
+
+### 手順
+
+1. GitHub にこのリポジトリを push
+2. Cloudflare ダッシュボードで `Workers & Pages` を開く
+3. `Create application` > `Pages` > `Import an existing Git repository`
+4. 対象リポジトリを接続
+5. 上記の Build 設定を入力してデプロイ
+
+### 補足
+
+- Pages の build image は Node.js 22 系がデフォルトですが、Cloudflare は `.node-version` または `NODE_VERSION` で上書きできます
+- 将来 `API Route`、`Server Actions`、`画像最適化` などサーバー機能を使うなら、Pages の static export ではなく Cloudflare Workers + OpenNext に切り替えるのが自然です
